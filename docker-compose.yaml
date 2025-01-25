@@ -1,0 +1,31 @@
+version: '3.7'
+
+services:
+  # g42puts-discord-bot:
+  #   image: g42puts-discord-bot
+  #   build: .
+  #   ports:
+  #     - "3000:3000"
+  #   deploy:
+  #     resources:
+  #       limits:
+  #         memory: 512M
+  #         cpus: '1.0'
+  
+  postgres:
+    container_name: postgresql-my_api
+    image: postgres:16-alpine
+    env_file:
+      - .env
+    volumes:
+      - ./data/pg:/data/postgres
+    ports:
+      - 5431:5432
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+        reservations:
+          memory: 256M
+volumes:
+  postgres:
