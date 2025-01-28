@@ -2,9 +2,7 @@ from http import HTTPStatus
 
 from fastapi.testclient import TestClient
 
-from my_api.modules.investments.schemas.calc_juros_compostos_schema import (
-    JurosCompostosSchema,
-)
+from my_api.schemas import JurosCompostosSchema
 
 
 def test_juros_compostos_routes(client: TestClient):

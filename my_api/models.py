@@ -41,3 +41,20 @@ class Investments:
     created_at: Mapped[str]
     updated_at: Mapped[str] = mapped_column(default=None, nullable=True)
     deleted_at: Mapped[str] = mapped_column(default=None, nullable=True)
+
+
+@table_registry.mapped_as_dataclass
+class User:
+    __tablename__ = 'user'
+
+    id: Mapped[str] = mapped_column(init=True, primary_key=True)
+    username: Mapped[str] = mapped_column(init=True, unique=True)
+    email: Mapped[str] = mapped_column(init=True, unique=True)
+    password: Mapped[str] = mapped_column(init=True)
+    created_at: Mapped[str] = mapped_column(init=True)
+    full_name: Mapped[str] = mapped_column(init=False, nullable=True)
+    is_active: Mapped[bool] = mapped_column(default=True, init=False, nullable=True)
+    is_superuser: Mapped[bool] = mapped_column(default=False, init=False, nullable=True)
+    is_staff: Mapped[bool] = mapped_column(default=False, init=False, nullable=True)
+    is_verified: Mapped[bool] = mapped_column(default=False, init=False, nullable=True)
+    updated_at: Mapped[str] = mapped_column(init=False, nullable=True)

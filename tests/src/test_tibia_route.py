@@ -2,9 +2,7 @@ from http import HTTPStatus
 
 from fastapi.testclient import TestClient
 
-from my_api.modules.tibia.schemas.tibia_hunt_analyser_schema import (
-    TibiaHuntAnalyserSchema,
-)
+from my_api.schemas import TibiaHuntAnalyserSchema
 
 
 def test_find_all_tibia_global_analyser(client: TestClient):

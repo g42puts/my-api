@@ -7,9 +7,7 @@ from sqlalchemy import select
 
 from my_api.infra.database.database import SessionDep
 from my_api.models import TibiaHuntAnalyser
-from my_api.modules.tibia.schemas.tibia_hunt_analyser_schema import (
-    TibiaHuntAnalyserSchema,
-)
+from my_api.schemas import TibiaHuntAnalyserSchema
 from my_api.utils import get_current_datetime_formatted
 
 router = APIRouter(prefix='/tibia/global', tags=['Tibia'])

@@ -9,15 +9,6 @@ from my_api.utils.get_current_datetime import get_current_datetime_formatted
 test_engine = create_engine("sqlite:///:memory:", connect_args={"check_same_thread": False})
 
 
-@pytest_fixture
-def setup_database():
-    # Configuração pré-teste: cria conexão e tabelas (se necessário)
-    connection = test_engine.connect()
-    yield connection
-    # Cleanup: fecha conexão após os testes
-    connection.close()
-
-
 def test_get_session(setup_database):
     """
     Testa se a função get_session fornece uma sessão válida.

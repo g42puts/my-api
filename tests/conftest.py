@@ -1,16 +1,17 @@
 import pytest
 from fastapi.testclient import TestClient
+from snowflake import SnowflakeGenerator
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 from testcontainers.postgres import PostgresContainer
 
 from my_api.app import app
-from my_api.infra.database.database import (
-    get_session,
-)
+from my_api.infra.auth.security import get_password_hash
+from my_api.infra.database.database import get_session
 from my_api.models import (
     Investments,
     TibiaHuntAnalyser,
+    User,
     table_registry,
 )
 from my_api.utils.get_current_datetime import get_current_datetime_formatted
@@ -94,3 +95,23 @@ def investment(session):
     session.refresh(new_investment)
 
     return new_investment
+
+
+@pytest.fixture
+def user(session):
+    password = 'testtest'
+    user = User(
+        id=f'{next(SnowflakeGenerator(12))}',
+        password=get_password_hash(password=password),
+        username='teste',
+        email='teste@teste.com',
+        created_at=get_current_datetime_formatted(),
+    )
+
+    session.add(user)
+    session.commit()
+    session.refresh(user)
+
+    user.clean_password = password
+
+    return user

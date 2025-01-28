@@ -2,12 +2,10 @@ from http import HTTPStatus
 
 from fastapi import APIRouter
 
-from my_api.modules.investments.schemas.calc_juros_compostos_schema import (
-    JurosCompostosSchema,
-)
 from my_api.modules.investments.utils.CalcRendimentosJurosCompostos import (
     CalcRendimentosJurosCompostos,
 )
+from my_api.schemas import JurosCompostosSchema
 
 juros_compostos_router = APIRouter(
     prefix='/calc',

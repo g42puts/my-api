@@ -1,7 +1,9 @@
 from fastapi import FastAPI
 
-from my_api.routes.investments import investments
-from my_api.routes.tibia import tibia
+from my_api.modules.auth.auth import auth_router
+from my_api.modules.investments.investments import router as investments_router
+from my_api.modules.tibia.tibia import router as tibia_router
+from my_api.modules.users.users import user_router
 
 contact = {
     'name': 'Gilmar',
@@ -23,8 +25,10 @@ app = FastAPI(
     root_path='/api/v1',
 )
 
-app.include_router(tibia.router)
-app.include_router(investments.router)
+app.include_router(auth_router)
+app.include_router(tibia_router)
+app.include_router(investments_router)
+app.include_router(user_router)
 
 
 @app.on_event('startup')

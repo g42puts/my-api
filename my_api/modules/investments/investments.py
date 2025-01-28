@@ -7,9 +7,7 @@ from sqlalchemy import select
 
 from my_api.infra.database.database import SessionDep
 from my_api.models import Investments
-from my_api.modules.investments.schemas.investments_schema import (
-    InvestmentsSchema,
-)
+from my_api.schemas import InvestmentsList, InvestmentsSchema
 from my_api.utils.get_current_datetime import get_current_datetime_formatted
 
 from .calcs import juros_compostos_routes
@@ -18,9 +16,10 @@ router = APIRouter(prefix='/investments', tags=['Investments', 'CDB', 'CDI'])
 router.include_router(juros_compostos_routes.juros_compostos_router)
 
 
-@router.get('', status_code=HTTPStatus.OK)
+@router.get('/', status_code=HTTPStatus.OK, response_model=InvestmentsList)
 def find_many_investments(session: SessionDep, offset: int = 0, limit: Annotated[int, Query(le=100)] = 100) -> list[Investments]:
-    return session.execute(select(Investments).offset(offset=offset).limit(limit=limit)).all()
+    investments = session.scalars(select(Investments).offset(offset).limit(limit)).all()
+    return {'investments': investments}
 
 
 @router.get('/{investment_id}', status_code=HTTPStatus.OK)

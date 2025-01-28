@@ -4,6 +4,7 @@ from pydantic_settings import BaseSettings
 class Configs(BaseSettings):
     @property
     def DATABASE_URL(self):
+        """Returns the database URL."""
         return (
             f"postgresql://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}"
             f"@{self.POSTGRES_HOST}:{self.POSTGRES_PORT}/{self.POSTGRES_DATABASE}"
