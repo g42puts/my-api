@@ -23,7 +23,7 @@ class TibiaHuntAnalyser:
     end_date: Mapped[str]
     created_at: Mapped[str]
     updated_at: Mapped[str] = mapped_column(init=False, nullable=True)
-    monsters_killeds: Mapped[str] = mapped_column(default=None, nullable=True)
+    monsters_killeds: Mapped[str]
 
 
 @table_registry.mapped_as_dataclass
