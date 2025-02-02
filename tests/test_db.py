@@ -9,6 +9,15 @@ from my_api.utils.get_current_datetime import get_current_datetime_formatted
 test_engine = create_engine("sqlite:///:memory:", connect_args={"check_same_thread": False})
 
 
+@pytest_fixture
+def setup_database():
+    # Configuração pré-teste: cria conexão e tabelas (se necessário)
+    connection = test_engine.connect()
+    yield connection
+    # Cleanup: fecha conexão após os testes
+    connection.close()
+
+
 def test_get_session(setup_database):
     """
     Testa se a função get_session fornece uma sessão válida.
@@ -36,7 +45,7 @@ def test_get_session(setup_database):
         get_session.__globals__["engine"] = original_engine
 
 
-def test_creat_tibia_hunt_analyser(session: Session):
+def test_create_tibia_hunt_analyser(session: Session):
     loot = 200000
     waste = 100000
     balance = loot - waste
@@ -56,6 +65,7 @@ def test_creat_tibia_hunt_analyser(session: Session):
         start_date='2024-09-26, 08:03:14',
         end_date='2024-09-27, 08:27:18',
         created_at=get_current_datetime_formatted(),
+        monsters_killeds="rat"
     )
     session.add(new_tibia_hunt_analyser)
     session.commit()

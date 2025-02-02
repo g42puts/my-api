@@ -50,11 +50,11 @@ def session(engine):
 
 
 @pytest.fixture
-def tibia_global_analyser(session):
+def tibia_hunt_analyser(session):
     loot = 10000
     waste = 5000
-    tibia_global_analyser = TibiaHuntAnalyser(
-        id="1",
+    tibia_hunt_analyser = TibiaHuntAnalyser(
+        id=f'{next(SnowflakeGenerator(12))}',
         character_name='Leloko',
         vocation='ELITE_KNIGHT',
         level=20,
@@ -69,12 +69,13 @@ def tibia_global_analyser(session):
         start_date='2024-09-26, 08:03:14',
         end_date='2024-09-26, 08:27:18',
         created_at=get_current_datetime_formatted(),
+        monsters_killeds="rat"
     )
-    session.add(tibia_global_analyser)
+    session.add(tibia_hunt_analyser)
     session.commit()
-    session.refresh(tibia_global_analyser)
+    session.refresh(tibia_hunt_analyser)
 
-    return tibia_global_analyser
+    return tibia_hunt_analyser
 
 
 @pytest.fixture

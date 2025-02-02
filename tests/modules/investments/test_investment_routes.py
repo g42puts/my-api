@@ -4,6 +4,7 @@ from fastapi.testclient import TestClient
 
 from my_api.schemas import InvestmentsPublic, InvestmentsSchema
 
+url = '/investments'
 # def test_calc_juros_compostos(client: TestClient):
 #     payload = {
 #         'meses': 12,
@@ -16,25 +17,6 @@ from my_api.schemas import InvestmentsPublic, InvestmentsSchema
 #     assert response.json() == {'message': 'TEste'}
 
 
-def test_find_many_investments(client: TestClient, investment):
-    investments_schema = InvestmentsPublic.model_validate(investment).model_dump()
-    response = client.get('/investments/')
-    assert response.status_code == HTTPStatus.OK
-    assert response.json() == {'investments': [investments_schema]}
-
-
-def test_find_investment_by_id(client: TestClient, investment):
-    response = client.get(f'/investments/{investment.id}')
-    assert response.status_code == HTTPStatus.OK
-    assert response.json()['initial_value'] == 500
-
-
-def test_find_investment_by_id_should_return_404(client: TestClient):
-    response = client.get('/investments/123')
-    assert response.status_code == HTTPStatus.NOT_FOUND
-    assert response.json()['detail'] == 'Investment not founded'
-
-
 def test_create_investment(client: TestClient):
     payload: InvestmentsSchema = {
         "category": "FII",
@@ -45,19 +27,38 @@ def test_create_investment(client: TestClient):
         "tax_period_type": "m",
         "initial_value": 500,
     }
-    response = client.post('/investments', json=payload)
+    response = client.post(url, json=payload)
     assert response.status_code == HTTPStatus.CREATED
     assert response.json()
     assert response.json()['data']
 
 
-def test_delete_investment_by_id_should_return_detail_true(client: TestClient, investment):
-    response = client.delete(f'/api/v1/investments/{investment.id}')
+def test_find_many_investments(client: TestClient, investment):
+    investments_schema = InvestmentsPublic.model_validate(investment).model_dump()
+    response = client.get(url)
     assert response.status_code == HTTPStatus.OK
-    assert response.json() == True
+    assert response.json() == {'investments': [investments_schema]}
+
+
+def test_find_investment_by_id(client: TestClient, investment):
+    response = client.get(f'{url}/{investment.id}')
+    assert response.status_code == HTTPStatus.OK
+    assert response.json()['initial_value'] == 500
+
+
+def test_find_investment_by_id_should_return_404(client: TestClient):
+    response = client.get(f'{url}/123')
+    assert response.status_code == HTTPStatus.NOT_FOUND
+    assert response.json()['detail'] == 'Investment not founded'
+
+
+def test_delete_investment_by_id_should_return_detail_true(client: TestClient, investment):
+    response = client.delete(f'{url}/{investment.id}')
+    assert response.status_code == HTTPStatus.OK
+    assert response.json() is True
 
 
 def test_delete_investment_by_id_should_return_404(client: TestClient):
-    response = client.delete('/investments/123')
+    response = client.delete(f'{url}/123')
     assert response.status_code == HTTPStatus.NOT_FOUND
     assert response.json()['detail'] == 'Investment not founded'

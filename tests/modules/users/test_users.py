@@ -5,6 +5,13 @@ from fastapi.testclient import TestClient
 from my_api.schemas import UserPublic
 
 
+def test_find_many_users(client: TestClient, user):
+    user_schema = UserPublic.model_validate(user).model_dump()
+    response = client.get('/user/')
+    assert response.status_code == HTTPStatus.OK
+    assert response.json() == {'users': [user_schema]}
+
+
 def test_create_user(client: TestClient):
     response = client.post(
         '/user/',
@@ -41,13 +48,6 @@ def test_email_already_exists(client: TestClient, user):
     )
     assert response.status_code == HTTPStatus.BAD_REQUEST
     assert response.json()['detail'] == 'Email already exists'
-
-
-def test_find_many_users(client: TestClient, user):
-    user_schema = UserPublic.model_validate(user).model_dump()
-    response = client.get('/user/')
-    assert response.status_code == HTTPStatus.OK
-    assert response.json() == {'users': [user_schema]}
 
 
 def test_find_user_by_id(client: TestClient, user):
