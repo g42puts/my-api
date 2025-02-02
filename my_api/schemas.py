@@ -81,9 +81,46 @@ class TibiaHuntAnalyserSchema(BaseModel):
     duration: int
     start_date: str
     end_date: str
-    monsters_killeds: list[str] = None
+    monsters_killeds: str
 
 
-class TibiaHuntAnalyserPublic(TibiaHuntAnalyserSchema):
-    id: int
+class UpdateTibiaHuntAnalyser(BaseModel):
+    character_name: str | None = None
+    level: int | None = None
+    vocation: str | None = None
+    world: str | None = None
+    experience: int | None = None
+    raw_xp_gain: int | None = None
+    xp_gain: int | None = None
+    loot: int | None = None
+    waste: int | None = None
+    balance: int | None = None
+    duration: int | None = None
+    start_date: str | None = None
+    end_date: str | None = None
+    monsters_killeds: str | None = None
+
+
+class TibiaHuntAnalyserPublic(BaseModel):
+    id: str
+    character_name: str
+    level: int
+    vocation: str
+    world: str
+    experience: int
+    raw_xp_gain: int
+    xp_gain: int
+    loot: int
+    waste: int
+    balance: int
+    duration: int
+    start_date: str
+    end_date: str
+    created_at: str
+    updated_at: str | None
+    monsters_killeds: str
     model_config = ConfigDict(from_attributes=True)
+
+
+class TibiaHuntAnalyserList(BaseModel):
+    analysers: list[TibiaHuntAnalyserPublic]
