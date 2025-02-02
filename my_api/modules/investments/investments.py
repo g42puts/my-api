@@ -16,7 +16,7 @@ router = APIRouter(prefix='/investments', tags=['Investments', 'CDB', 'CDI'])
 router.include_router(juros_compostos_routes.juros_compostos_router)
 
 
-@router.get('/', status_code=HTTPStatus.OK, response_model=InvestmentsList)
+@router.get('', status_code=HTTPStatus.OK, response_model=InvestmentsList)
 def find_many_investments(session: SessionDep, offset: int = 0, limit: Annotated[int, Query(le=100)] = 100) -> list[Investments]:
     investments = session.scalars(select(Investments).offset(offset).limit(limit)).all()
     return {'investments': investments}
@@ -54,8 +54,10 @@ def create_investment(payload: InvestmentsSchema, session: SessionDep):
 @router.delete('/{investment_id}')
 def delete_investment_by_id(investment_id: str, session: SessionDep):
     investment = session.get(Investments, investment_id)
+
     if not investment:
-        raise HTTPException(status_code=404, detail='Investment not founded')
+        raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail='Investment not founded')
+
     session.delete(investment)
     session.commit()
     return True

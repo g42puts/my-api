@@ -7,19 +7,24 @@ from sqlalchemy import select
 
 from my_api.infra.database.database import SessionDep
 from my_api.models import TibiaHuntAnalyser
-from my_api.schemas import TibiaHuntAnalyserSchema
+from my_api.schemas import (
+    TibiaHuntAnalyserList,
+    TibiaHuntAnalyserSchema,
+    UpdateTibiaHuntAnalyser,
+)
 from my_api.utils import get_current_datetime_formatted
 
 router = APIRouter(prefix='/tibia/global', tags=['Tibia'])
 
 
-@router.get('/analyser', status_code=HTTPStatus.OK)
-def find_all_tibia_global_analyser(session: SessionDep, offset: int = 0, limit: Annotated[int, Query(le=100)] = 100):
-    return session.execute(select(TibiaHuntAnalyser).offset(offset=offset).limit(limit=limit)).all()
+@router.get('/analyser', status_code=HTTPStatus.OK, response_model=TibiaHuntAnalyserList)
+def find_many_tibia_hunt_analyser(session: SessionDep, offset: int = 0, limit: Annotated[int, Query(le=100)] = 100):
+    analysers = session.scalars(select(TibiaHuntAnalyser).offset(offset=offset).limit(limit=limit)).all()
+    return {'analysers': analysers}
 
 
 @router.get('/analyser/{id}', status_code=HTTPStatus.OK)
-def find_tibia_global_analyser_by_id(id: str, session: SessionDep):
+def find_tibia_hunt_analyser_by_id(id: str, session: SessionDep):
     tibia_global_analyser = session.get(TibiaHuntAnalyser, id)
 
     if not tibia_global_analyser:
@@ -28,7 +33,7 @@ def find_tibia_global_analyser_by_id(id: str, session: SessionDep):
 
 
 @router.post('/analyser', status_code=HTTPStatus.CREATED)
-def create_tibia_global_analyser(tibia_hunt_analyser: TibiaHuntAnalyserSchema, session: SessionDep):
+def create_tibia_hunt_analyser(tibia_hunt_analyser: TibiaHuntAnalyserSchema, session: SessionDep):
     db_tibia_hunt_analyser = TibiaHuntAnalyser(
         id=f'{next(SnowflakeGenerator(12))}',
         character_name=tibia_hunt_analyser.character_name,
@@ -52,3 +57,37 @@ def create_tibia_global_analyser(tibia_hunt_analyser: TibiaHuntAnalyserSchema, s
     session.refresh(db_tibia_hunt_analyser)
 
     return {'data': db_tibia_hunt_analyser}
+
+
+# TODO: Create test
+@router.patch('/analyser/{id}', status_code=HTTPStatus.OK)
+def update_tibia_hunt_analyser(
+    id: str,
+    tibia_hunt_analyser: UpdateTibiaHuntAnalyser,
+    session: SessionDep
+):
+    db_tibia_hunt_analyser = session.get(TibiaHuntAnalyser, id)
+    if not db_tibia_hunt_analyser:
+        raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail='Analyser not found')
+
+    update_data = tibia_hunt_analyser.model_dump(exclude_unset=True)
+
+    for key, value in update_data.items():
+        setattr(db_tibia_hunt_analyser, key, value)
+
+    session.commit()
+    session.refresh(db_tibia_hunt_analyser)
+
+    return db_tibia_hunt_analyser
+
+
+@router.delete('/analyser/{id}', status_code=HTTPStatus.OK)
+def delete_tibia_hunt_analyser(id: str, session: SessionDep):
+    db_tibia_hunt_analyser = session.get(TibiaHuntAnalyser, id)
+
+    if not db_tibia_hunt_analyser:
+        raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail='Analyser not founded')
+
+    session.delete(db_tibia_hunt_analyser)
+    session.commit()
+    return True
